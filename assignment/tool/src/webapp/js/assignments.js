@@ -843,6 +843,20 @@ ASN.toggleAutoAnnounceOptions = function(checked){
     }
 };
 
+ASN.toggleAutoAnnounceEstimate = function(checked){
+    var obEstimate = document.getElementById("checkobestimate");
+    var timeEstimate = document.getElementById("inputtimestimate");
+    if(checked){
+    	obEstimate.style.display="block";
+    	timeEstimate.style.display="block";
+        ASN.resizeFrame('grow');
+    }else{
+    	obEstimate.style.display="none";
+    	timeEstimate.style.display="none";
+        ASN.resizeFrame('shrink');
+    }
+};
+
 // SAK-30032
 ASN.setupPeerReviewAttachment = function(){
     $('#submissionFileCount').val(1);

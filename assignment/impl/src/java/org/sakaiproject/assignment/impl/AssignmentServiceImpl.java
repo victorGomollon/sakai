@@ -911,6 +911,9 @@ public class AssignmentServiceImpl implements AssignmentService, EntityTransferr
                 // for ContentReview service
                 assignment.setContentReview(existingAssignment.getContentReview());
 
+                assignment.setObEstimate(existingAssignment.getObEstimate());
+                assignment.setEstimate(existingAssignment.getEstimate());
+                
                 //duplicating attachments
                 Set<String> tempAttach = existingAssignment.getAttachments();
                 if (tempAttach != null && !tempAttach.isEmpty()){

@@ -67,6 +67,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.util.StringUtil;
 import org.sakaiproject.announcement.api.*;
 import org.sakaiproject.assignment.api.*;
 import org.sakaiproject.assignment.api.model.Assignment;
@@ -2600,6 +2601,9 @@ public class AssignmentAction extends PagedResourceActionII {
         context.put("name_NEW_ASSIGNMENT_REVIEW_SERVICE_EXCLUDE_TYPE", NEW_ASSIGNMENT_REVIEW_SERVICE_EXCLUDE_TYPE);
         context.put("name_NEW_ASSIGNMENT_REVIEW_SERVICE_EXCLUDE_VALUE", NEW_ASSIGNMENT_REVIEW_SERVICE_EXCLUDE_VALUE);
 
+    	context.put("name_NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE", ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE);
+        context.put("name_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE", ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE);
+        context.put("name_NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE", ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE);
 
         context.put("name_title", NEW_ASSIGNMENT_TITLE);
         context.put("name_order", NEW_ASSIGNMENT_ORDER);
@@ -2784,6 +2788,10 @@ public class AssignmentAction extends PagedResourceActionII {
 
         context.put("value_CheckHideDueDate", state.getAttribute(NEW_ASSIGNMENT_CHECK_HIDE_DUE_DATE));
 
+    	context.put("value_NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE));
+        context.put("value_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE));
+        context.put("value_NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE));
+                
         // don't show the choice when there is no Announcement tool yet
         if (state.getAttribute(ANNOUNCEMENT_CHANNEL) != null) {
             context.put("value_CheckAutoAnnounce", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_AUTO_ANNOUNCE));
@@ -3185,6 +3193,10 @@ public class AssignmentAction extends PagedResourceActionII {
         context.put("value_opendate_notification_high", AssignmentConstants.ASSIGNMENT_OPENDATE_NOTIFICATION_HIGH);
         context.put("value_CheckAddHonorPledge", state.getAttribute(NEW_ASSIGNMENT_CHECK_ADD_HONOR_PLEDGE));
 
+    	context.put("value_NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE));
+        context.put("value_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE));
+        context.put("value_NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE));
+        
         context.put("value_CheckAnonymousGrading", Boolean.FALSE);
 
         // get all available assignments from Gradebook tool except for those created from
@@ -4419,6 +4431,10 @@ public class AssignmentAction extends PagedResourceActionII {
             context.put("scheduled", properties.get(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_DUE_DATE));
             context.put("announced", properties.get(ResourceProperties.NEW_ASSIGNMENT_CHECK_AUTO_ANNOUNCE));
 
+        	context.put("value_NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE));
+            context.put("value_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE));
+            context.put("value_NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE", state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE));
+            
             Map<String, Reference> attachmentReferences = new HashMap<>();
             assignment.getAttachments().forEach(r -> attachmentReferences.put(r, entityManager.newReference(r)));
             context.put("attachmentReferences", attachmentReferences);
@@ -6505,6 +6521,16 @@ public class AssignmentAction extends PagedResourceActionII {
             addAlert(state, rb.getString("assig3"));
         }
 
+        if(params.getString(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE) != null
+                && params.getString(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE).equalsIgnoreCase(Boolean.TRUE.toString())) {
+        	String timeSheet = params.getString(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE);
+	        if (StringUtils.isBlank(timeSheet)) {
+	            addAlert(state, rb.getString("timeempty"));
+	        } else if (!correctTime(timeSheet)) {
+	            addAlert(state, rb.getFormattedMessage("timeformat"));
+	        }
+        }
+        
         state.setAttribute(NEW_ASSIGNMENT_ENABLECLOSEDATE, Boolean.TRUE);
         if(params.getBoolean(NEW_ASSIGNMENT_REMINDER_EMAIL)){
             state.setAttribute(NEW_ASSIGNMENT_REMINDER_EMAIL, Boolean.TRUE);
@@ -6832,6 +6858,22 @@ public class AssignmentAction extends PagedResourceActionII {
                 state.setAttribute(AssignmentConstants.ASSIGNMENT_OPENDATE_NOTIFICATION, AssignmentConstants.ASSIGNMENT_OPENDATE_NOTIFICATION_NONE);
             }
         }
+        
+        if (params.getString(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE) != null
+                && params.getString(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE).equalsIgnoreCase(Boolean.TRUE.toString())) {
+        	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE, Boolean.TRUE.toString());
+            if (params.getString(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE) != null
+                    && params.getString(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE).equalsIgnoreCase(Boolean.TRUE.toString())) {
+            	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE, Boolean.TRUE.toString());
+            }
+            if (params.getString(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE) != null) {
+            	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE, params.getString(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE));
+            }
+        }else {
+        	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE, Boolean.FALSE.toString());
+        	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE, Boolean.FALSE.toString());
+        	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE, StringUtils.EMPTY);
+        }
 
         Boolean hdd = params.getBoolean(NEW_ASSIGNMENT_CHECK_HIDE_DUE_DATE);
         state.setAttribute(NEW_ASSIGNMENT_CHECK_HIDE_DUE_DATE, hdd);
@@ -6947,7 +6989,20 @@ public class AssignmentAction extends PagedResourceActionII {
 
     } // setNewAssignmentParameters
 
-    /**
+    private boolean correctTime(String timeSheet) {
+    	Pattern pattern = Pattern.compile(serverConfigurationService.getString("assignment.patternTime"));
+//		Pattern pattern = Pattern.compile("^([0-9]?[0-9]h|[0-9]?[0-9]H)$|([0-9]?[0-9]m|[0-9]?[0-9]M)$|(([0-9]?[0-9]h|[0-9]?[0-9]H)[ ]([0-9]?[0-9]m|[0-9]?[0-9]M))$");
+		Matcher encaja = pattern.matcher(timeSheet);
+
+		if(!encaja.matches()) {
+			return false;
+		}else {
+			return true;
+		}
+		
+	}
+
+	/**
      * check to see whether there is already an assignment with the same title in the site
      *
      * @param assignmentRef
@@ -7533,6 +7588,22 @@ public class AssignmentAction extends PagedResourceActionII {
                 allowResubmitNumber = null;
             }
 
+            boolean checkIsEstimate = false;
+            boolean checkObEstimate = false;
+            String timeEstimate = StringUtils.EMPTY;
+            if (state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE) != null
+                    && ((String)state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE)).equalsIgnoreCase(Boolean.TRUE.toString())) {
+            	checkIsEstimate = Boolean.TRUE;
+                if (state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE) != null
+                        && ((String)state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE)).equalsIgnoreCase(Boolean.TRUE.toString())) {
+                	checkObEstimate = Boolean.TRUE;
+                }
+                if (state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE) != null) {
+                	timeEstimate = (String) state.getAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE);
+                }
+            }
+            
+            
             String submitReviewRepo = (String) state.getAttribute(NEW_ASSIGNMENT_REVIEW_SERVICE_SUBMIT_RADIO);
             String generateOriginalityReport = (String) state.getAttribute(NEW_ASSIGNMENT_REVIEW_SERVICE_REPORT_RADIO);
             boolean checkTurnitin = "true".equalsIgnoreCase((String) state.getAttribute(NEW_ASSIGNMENT_REVIEW_SERVICE_CHECK_TURNITIN));
@@ -7624,7 +7695,8 @@ public class AssignmentAction extends PagedResourceActionII {
                         gradeType, gradePoints, description, checkAddHonorPledge, attachments, section, rangeAndGroupSettings.range,
                         visibleTime, openTime, dueTime, closeTime, hideDueDate, enableCloseDate, emailReminder, rangeAndGroupSettings.isGroupSubmit, rangeAndGroupSettings.groups,
                         usePeerAssessment, peerPeriodTime, peerAssessmentAnonEval, peerAssessmentStudentViewReviews, peerAssessmentNumReviews, peerAssessmentInstructions,
-                        submitReviewRepo, generateOriginalityReport, checkTurnitin, checkInternet, checkPublications, checkInstitution, excludeBibliographic, excludeQuoted, excludeSelfPlag, storeInstIndex, studentPreview, excludeType, excludeValue);
+                        submitReviewRepo, generateOriginalityReport, checkTurnitin, checkInternet, checkPublications, checkInstitution, excludeBibliographic, excludeQuoted, excludeSelfPlag, storeInstIndex, studentPreview, excludeType, excludeValue,
+                        checkIsEstimate, checkObEstimate, timeEstimate);
 
                 //RUBRICS, Save the binding between the assignment and the rubric
                 rubricsService.saveRubricAssociation(RubricsConstants.RBCS_TOOL_ASSIGNMENT, a.getId(), getRubricConfigurationParameters(params));
@@ -8466,7 +8538,10 @@ public class AssignmentAction extends PagedResourceActionII {
                                   boolean storeInstIndex,
                                   boolean studentPreview,
                                   int excludeType,
-                                  int excludeValue) {
+                                  int excludeValue,
+                                  boolean checkIsEstimate,
+                                  boolean checkObEstimate,
+                                  String timeEstimate) {
         a.setTitle(title);
         a.setContext((String) state.getAttribute(STATE_CONTEXT_STRING));
         a.setSection(section);
@@ -8482,6 +8557,11 @@ public class AssignmentAction extends PagedResourceActionII {
         a.setDueDate(dueTime);
         a.setDropDeadDate(dueTime);
         a.setVisibleDate(visibleTime);
+        
+        if(checkIsEstimate) {
+        	a.setObEstimate(checkObEstimate);
+        	a.setEstimate(timeEstimate);
+        }
         if (closeTime != null) a.setCloseDate(closeTime);
 
         Map<String, String> p = a.getProperties();
@@ -9066,6 +9146,12 @@ public class AssignmentAction extends PagedResourceActionII {
                 state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_DUE_DATE, properties.get(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_DUE_DATE));
 
                 state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_AUTO_ANNOUNCE, properties.get(ResourceProperties.NEW_ASSIGNMENT_CHECK_AUTO_ANNOUNCE));
+                
+                if(StringUtils.isNotBlank( a.getEstimate())) {
+                	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE, Boolean.TRUE);
+                    state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE, a.getObEstimate());
+                    state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE, a.getEstimate());	
+                }
 
                 if (properties.get(AssignmentConstants.ASSIGNMENT_OPENDATE_NOTIFICATION) != null) {
                     state.setAttribute(AssignmentConstants.ASSIGNMENT_OPENDATE_NOTIFICATION, properties.get(AssignmentConstants.ASSIGNMENT_OPENDATE_NOTIFICATION));
@@ -11202,6 +11288,10 @@ public class AssignmentAction extends PagedResourceActionII {
         boolean checkAddDueDate = (state.getAttribute(CALENDAR) != null || state.getAttribute(ADDITIONAL_CALENDAR) != null) && serverConfigurationService.getBoolean(SAK_PROP_DUE_DATE_TO_CALENDAR_DEFAULT, DUE_DATE_TO_CALENDAR_DEFAULT);
         state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_DUE_DATE, Boolean.toString(checkAddDueDate));
         state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_AUTO_ANNOUNCE, Boolean.FALSE.toString());
+        
+//        state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE, Boolean.FALSE.toString());
+//        state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE, Boolean.FALSE.toString());
+//        state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE, StringUtils.EMPTY);
 
         String defaultNotification = serverConfigurationService.getString("announcement.default.notification", "n");
         if (defaultNotification.equalsIgnoreCase("r")) {
@@ -11321,6 +11411,10 @@ public class AssignmentAction extends PagedResourceActionII {
         state.removeAttribute(NEW_ASSIGNMENT_FOCUS);
         state.removeAttribute(NEW_ASSIGNMENT_DESCRIPTION_EMPTY);
 
+        state.removeAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE);
+        state.removeAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE);
+        state.removeAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE);
+        
         // reset the global navigaion alert flag
         if (state.getAttribute(ALERT_GLOBAL_NAVIGATION) != null) {
             state.removeAttribute(ALERT_GLOBAL_NAVIGATION);
