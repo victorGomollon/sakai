@@ -995,6 +995,11 @@ public class AssignmentAction extends PagedResourceActionII {
     private UserTimeService userTimeService;
     private RangeAndGroupsDelegate rangeAndGroups;
 
+    /**
+     * sort by assignment due date
+     */
+    private static final String SORTED_BY_ESTIMATE = "timesheet";
+    
     public AssignmentAction() {
         super();
 
@@ -6991,7 +6996,7 @@ public class AssignmentAction extends PagedResourceActionII {
 
     private boolean correctTime(String timeSheet) {
     	Pattern pattern = Pattern.compile(serverConfigurationService.getString("assignment.patternTime"));
-//		Pattern pattern = Pattern.compile("^([0-9]?[0-9]h|[0-9]?[0-9]H)$|([0-9]?[0-9]m|[0-9]?[0-9]M)$|(([0-9]?[0-9]h|[0-9]?[0-9]H)[ ]([0-9]?[0-9]m|[0-9]?[0-9]M))$");
+//		Pattern pattern = Pattern.compile("^([0-9]?[0-9]h|[0-9]?[0-9]H)$|([0-9]?[0-9]m|[0-9]?[0-9]M)$|(([0-9]?[0-9]h|[0-9]?[0-9]H)[ ]?([0-9]?[0-9]m|[0-9]?[0-9]M))$");
 		Matcher encaja = pattern.matcher(timeSheet);
 
 		if(!encaja.matches()) {
@@ -14939,6 +14944,12 @@ public class AssignmentAction extends PagedResourceActionII {
                 String name2 = ((User) o2).getSortName();
 
                 result = compareString(name1, name2);
+            } else if (m_criteria.equals(SORTED_BY_ESTIMATE)) {
+                // sorted by the assignment estimate
+                String t1 = ((Assignment) o1).getEstimate();
+                String t2 = ((Assignment) o2).getEstimate();
+                result = compareEstimate(t1, t2);
+
             }
 
             // sort ascending or descending
@@ -14947,8 +14958,41 @@ public class AssignmentAction extends PagedResourceActionII {
             }
             return result;
         }
+        
+        private int compareEstimate(String t1, String t2) {
+            int result;
+            if (StringUtils.isBlank(t1)  && StringUtils.isBlank(t2)) {
+                result = 0;
+            } else if (StringUtils.isBlank(t2)) {
+                result = 1;
+            } else if (StringUtils.isBlank(t1)) {
+                result = -1;
+            } else {
+            	int i1, i2;
+            	i1 = timeToInt(t1);
+            	i2 = timeToInt(t2);
+                result = (i1 < i2) ? -1 : 1;
+            }
+            return result;
+		}
 
-        /**
+		private int timeToInt(String time) {
+			String timeSheet[] = time.split("h|H");
+			int timeParseInt=0;
+			if(timeSheet.length > 1) {
+				timeParseInt = timeParseInt + Integer.parseInt(timeSheet[0].trim())*60;
+				timeParseInt = timeParseInt + Integer.parseInt(timeSheet[1].split("m|M")[0].trim());
+			}else {
+				if(timeSheet[0].contains("m") || timeSheet[0].contains("M")) {
+					timeParseInt = timeParseInt + Integer.parseInt(timeSheet[0].split("m|M")[0].trim());
+				}else {
+					timeParseInt = timeParseInt + Integer.parseInt(timeSheet[0].trim())*60;
+				}
+			}
+			return timeParseInt;
+		}
+
+		/**
          * returns AssignmentSubmission object for given assignment by current user
          *
          * @param a
@@ -15182,6 +15226,6 @@ public class AssignmentAction extends PagedResourceActionII {
          */
         public void setSubmissionTimestamp(String timeStamp) {
             m_timeStamp = timeStamp;
-        }
+        }        
     }
 }

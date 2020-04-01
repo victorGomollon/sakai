@@ -3666,6 +3666,9 @@ public class AssignmentServiceImpl implements AssignmentService, EntityTransferr
                     nAssignment.setScaleFactor(oAssignment.getScaleFactor());
                     nAssignment.setReleaseGrades(oAssignment.getReleaseGrades());
 
+                    nAssignment.setObEstimate(oAssignment.getObEstimate());
+                    nAssignment.setEstimate(oAssignment.getEstimate());
+                    
                     // group assignment
                     if (oAssignment.getTypeOfAccess() == GROUP) {
                         nAssignment.setTypeOfAccess(GROUP);

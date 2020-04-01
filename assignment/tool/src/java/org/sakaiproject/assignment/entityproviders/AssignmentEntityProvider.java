@@ -1117,7 +1117,11 @@ public class AssignmentEntityProvider extends AbstractEntityProvider implements 
         private boolean anonymousGrading;
 
         private Boolean allowPeerAssessment;
+        
+        private Boolean obEstimate;
 
+        private String estimate;
+        
         public SimpleAssignment() {
         }
 
@@ -1228,6 +1232,9 @@ public class AssignmentEntityProvider extends AbstractEntityProvider implements 
             }
 
             this.allowPeerAssessment = a.getAllowPeerAssessment();
+            
+            this.obEstimate = a.getObEstimate();
+            this.estimate = a.getEstimate();
         }
     }
 

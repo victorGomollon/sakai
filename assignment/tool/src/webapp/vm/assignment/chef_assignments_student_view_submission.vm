@@ -253,6 +253,18 @@ $(document).ready(function(){
 					</div>
 				#end
 			#end
+			#if (!$assignment.Estimate.equals(""))
+			<div class="row">
+				<div class="col-lg-4 col-sm-6 col-xs-12">
+					<div class="itemSummaryHeader">$tlang.getString("gen.estimate")</div>
+				</div>
+				<div class="col-lg-4 col-sm-6 col-xs-12">
+					<div class="itemSummaryValue">
+						$formattedText.escapeHtml($!assignment.Estimate)
+					</div>
+				</div>
+			</div>
+			#end
 			##show alert when assignment is modified and the modified date is after its open date	
 			#set($newAssignment="false")
 			#set($newAssignment=$assignment.Properties.get("newAssignment"))

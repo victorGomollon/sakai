@@ -112,6 +112,16 @@
 					#end
 				</td>
 			</tr>
+			#if (!$assignment.Estimate.equals(""))
+				<tr>
+					<th>
+						$tlang.getString("gen.estimate")
+					</th>
+					<td>
+						$formattedText.escapeHtml($!assignment.Estimate)
+					</td>
+				</tr>
+			#end
 			<tr> 
 				<th>
 					$tlang.getString("gen.honple")

@@ -167,6 +167,16 @@
 					#end
 				</td>
 			</tr>
+			#if (!$assignment.Estimate.equals(""))
+				<tr>
+					<th>
+						$tlang.getString("gen.estimate")
+					</th>
+					<td>
+						$formattedText.escapeHtml($!assignment.Estimate)
+					</td>
+				</tr>
+			#end
 			#if ($scheduled)
 				<tr> 
 					<th>
@@ -320,6 +330,16 @@
 							#end
 						</td>
 					</tr>
+					#if (!$assignment.Estimate.equals(""))
+						<tr>
+							<th>
+								$tlang.getString("gen.estimate")
+							</th>
+							<td>
+								$formattedText.escapeHtml($!assignment.Estimate)
+							</td>
+						</tr>
+					#end
 					##show alert when assignment is modified and the modified date is after its open date
 					#if($!alertTimeLastModified)
 						<tr>

@@ -156,6 +156,18 @@
 							#end
 						</a>
 					</th>
+					<th id="timeSheet">
+						<a href="javascript:void(0)" onclick="location='#toolLinkParam("$action" "doSort" "criteria=timesheet")'; return false;"  title="$tlang.getString("gen.sorbytime")">
+							$tlang.getString("gen.timesheet")
+							#if ($sortedBy.equals("timesheet"))
+								#if ($sortedAsc.equals("true"))
+									<img id="sortascendingtimesheet" src = "#imageLink("sakai/sortascending.gif")" border="0" alt="$tlang.getString("gen.sorasc")" />
+								#else
+									<img id="sortdescendingtimesheet" src = "#imageLink("sakai/sortdescending.gif")" border="0" alt="$tlang.getString("gen.sordes")" />
+								#end
+							#end
+						</a>
+					</th>
 					#if ($!allowGradeSubmission)
 						#if ($!view.equals('lisofass1'))
 						#if ($!showNumSubmissionColumn)
@@ -506,6 +518,15 @@
 								<span class="highlight">$!service.getUsersLocalDateTimeString($!assignment.DueDate)</span>
 							#end
 
+							</td>
+
+							<td headers="timeSheet">
+							#if ($assignment.Estimate.equals(""))
+								-
+							#else
+								##Instructors can still see the due date
+								-/$!assignment.Estimate
+							#end	
 							</td>
 
 							#if ($!allowGradeSubmission)
