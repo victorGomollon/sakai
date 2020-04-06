@@ -846,6 +846,8 @@ ASN.toggleAutoAnnounceOptions = function(checked){
 ASN.toggleAutoAnnounceEstimate = function(checked){
     var obEstimate = document.getElementById("checkobestimate");
     var timeEstimate = document.getElementById("inputtimestimate");
+    var timeEstimateInput = document.getElementById("new_assignment_input_add_time_estimate");
+    var obEstimateCheck = document.getElementById("new_assignment_check_add_ob_estimate");
     if(checked){
     	obEstimate.style.display="block";
     	timeEstimate.style.display="block";
@@ -853,6 +855,8 @@ ASN.toggleAutoAnnounceEstimate = function(checked){
     }else{
     	obEstimate.style.display="none";
     	timeEstimate.style.display="none";
+    	timeEstimateInput.value="";
+    	obEstimateCheck.checked="";
         ASN.resizeFrame('shrink');
     }
 };

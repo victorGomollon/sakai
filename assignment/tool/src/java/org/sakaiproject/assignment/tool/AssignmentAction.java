@@ -8563,10 +8563,9 @@ public class AssignmentAction extends PagedResourceActionII {
         a.setDropDeadDate(dueTime);
         a.setVisibleDate(visibleTime);
         
-        if(checkIsEstimate) {
-        	a.setObEstimate(checkObEstimate);
-        	a.setEstimate(timeEstimate);
-        }
+        a.setObEstimate(checkObEstimate);
+        a.setEstimate(timeEstimate);
+        
         if (closeTime != null) a.setCloseDate(closeTime);
 
         Map<String, String> p = a.getProperties();
@@ -9154,7 +9153,7 @@ public class AssignmentAction extends PagedResourceActionII {
                 
                 if(StringUtils.isNotBlank( a.getEstimate())) {
                 	state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_IS_ESTIMATE, Boolean.TRUE);
-                    state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE, a.getObEstimate());
+                    state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE, a.getObEstimate().toString());
                     state.setAttribute(ResourceProperties.NEW_ASSIGNMENT_INPUT_ADD_TIME_ESTIMATE, a.getEstimate());	
                 }
 

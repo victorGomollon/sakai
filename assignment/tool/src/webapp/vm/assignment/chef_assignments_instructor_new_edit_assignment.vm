@@ -479,7 +479,7 @@
 				<div id="checkobestimate"  style="display:none" class="checkbox">
 			#end
 				<label for="$name_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE">
-				#if ($!value_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE)
+				#if ($!value_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE.equals("true"))
 					<input id="$name_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE" name="$name_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE" type="checkbox" value="true" checked="checked" />
 				#else
 					<input id="$name_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE" name="$name_NEW_ASSIGNMENT_CHECK_ADD_OB_ESTIMATE" type="checkbox" value="true" />
